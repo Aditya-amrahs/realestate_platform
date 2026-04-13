@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models, schemas
 from auth import require_user  # user only
+from datetime import time as time_type
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
