@@ -4,6 +4,8 @@ from typing import Optional
 from database import get_db
 import models, schemas
 from auth import require_agent
+from vector_store import build_index
+
 
 router = APIRouter(prefix="/properties", tags=["Properties"])
 
@@ -19,6 +21,8 @@ def create_property(
     db.add(prop)
     db.commit()
     db.refresh(prop)
+    all_props = db.query(models.Property).all()  #
+    build_index(all_props)  # rebuild FAISS index with new property
     return prop
 
 
@@ -93,4 +97,6 @@ def delete_property(
         raise HTTPException(status_code=404, detail="Property not found or not yours")
     db.delete(prop)
     db.commit()
+    all_props = db.query(models.Property).all()  #
+    build_index(all_props)  # rebuild FAISS index after deletion
     return {"message": "Property deleted"}

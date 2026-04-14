@@ -53,6 +53,7 @@ db.add(a2)
 db.commit()
 
 # ── Properties
+# the properties list with this — adds image_url to each
 properties = [
     models.Property(
         title="Sunny 2BHK in Indiranagar",
@@ -61,6 +62,7 @@ properties = [
         type="apartment",
         size=1100,
         agent_id=a1.id,
+        image_url="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop",
     ),
     models.Property(
         title="Spacious Villa with Garden",
@@ -69,6 +71,7 @@ properties = [
         type="villa",
         size=3200,
         agent_id=a1.id,
+        image_url="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop",
     ),
     models.Property(
         title="Modern Studio near Metro",
@@ -77,6 +80,7 @@ properties = [
         type="apartment",
         size=520,
         agent_id=a1.id,
+        image_url="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&auto=format&fit=crop",
     ),
     models.Property(
         title="3BHK Independent House",
@@ -85,6 +89,7 @@ properties = [
         type="house",
         size=2100,
         agent_id=a2.id,
+        image_url="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop",
     ),
     models.Property(
         title="Luxury Penthouse Sea View",
@@ -93,6 +98,7 @@ properties = [
         type="apartment",
         size=4100,
         agent_id=a2.id,
+        image_url="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop",
     ),
     models.Property(
         title="Plot in Whitefield",
@@ -101,6 +107,7 @@ properties = [
         type="plot",
         size=2400,
         agent_id=a2.id,
+        image_url="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop",
     ),
     models.Property(
         title="Cozy 1BHK Koramangala",
@@ -109,6 +116,7 @@ properties = [
         type="apartment",
         size=650,
         agent_id=a1.id,
+        image_url="https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&auto=format&fit=crop",
     ),
     models.Property(
         title="Farmhouse with Pool",
@@ -117,8 +125,10 @@ properties = [
         type="villa",
         size=5000,
         agent_id=a2.id,
+        image_url="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&auto=format&fit=crop",
     ),
 ]
+
 for p in properties:
     db.add(p)
 db.commit()

@@ -44,6 +44,7 @@ class Property(Base):
     price = Column(Float, index=True)
     type = Column(String(50))
     size = Column(Integer)
+    image_url = Column(String(500), nullable=True)
     agent_id = Column(Integer, ForeignKey("agents.id"))
 
     agent = relationship("Agent", back_populates="properties")

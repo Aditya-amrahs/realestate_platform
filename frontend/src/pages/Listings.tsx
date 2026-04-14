@@ -5,15 +5,17 @@ import { useAuth } from "../context/AuthContext";
 
 interface Property {
   id: number; title: string; city: string;
-  price: number; type: string; size: number;
+  price: number; type: string; size: number; image_url: string | null;
 }
+
+
 
 export default function Listings() {
   const { user } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
   const [filters, setFilters] = useState({ city: "", min_price: "", max_price: "", type: "" });
   const [showForm, setShowForm] = useState(false);
-  const [newProp, setNewProp] = useState({ title: "", city: "", price: "", type: "apartment", size: "" });
+  const [newProp, setNewProp] = useState({ title: "", city: "", price: "", type: "apartment", size: "", image_url: "" });
   const [formMsg, setFormMsg] = useState("");
 
   async function fetchProperties() {
@@ -34,9 +36,10 @@ export default function Listings() {
         price: Number(newProp.price),
         type: newProp.type,
         size: Number(newProp.size),
+        image_url: newProp.image_url || null,
       });
       setFormMsg("Property listed successfully!");
-      setNewProp({ title: "", city: "", price: "", type: "apartment", size: "" });
+      setNewProp({ title: "", city: "", price: "", type: "apartment", size: "", image_url: "" });
       fetchProperties();
     } catch {
       setFormMsg("Failed to add property.");
@@ -83,6 +86,11 @@ export default function Listings() {
             <input className="border rounded-lg px-3 py-2 text-sm"
               placeholder="Size (sqft)" type="number" value={newProp.size} required
               onChange={e => setNewProp({ ...newProp, size: e.target.value })} />
+            <input className="border rounded-lg px-3 py-2 text-sm col-span-2"
+              placeholder="Image URL (optional — paste any public image link)"
+              value={newProp.image_url}
+              onChange={e => setNewProp({ ...newProp, image_url: e.target.value })} />
+              
             <button className="col-span-2 bg-indigo-600 text-white py-2 rounded-lg text-sm hover:bg-indigo-700">
               Submit Listing
             </button>
@@ -122,14 +130,24 @@ export default function Listings() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {properties.map(p => (
             <Link to={`/properties/${p.id}`} key={p.id}
-              className="bg-white rounded-xl shadow hover:shadow-md transition p-5 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">{p.type}</span>
-                <span className="text-xs text-gray-400">{p.size} sqft</span>
+              className="bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden">
+              {/* image */}
+              <div className="h-44 bg-gray-100 overflow-hidden">
+                {p.image_url
+                  ? <img src={p.image_url} alt={p.title} className="w-full h-full object-cover" />
+                  : <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">No image</div>
+                }
               </div>
-              <h2 className="font-medium text-gray-800">{p.title}</h2>
-              <p className="text-sm text-gray-500">{p.city}</p>
-              <p className="text-indigo-600 font-semibold">₹{p.price.toLocaleString()}</p>
+              {/* card body */}
+              <div className="p-4 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">{p.type}</span>
+                  <span className="text-xs text-gray-400">{p.size} sqft</span>
+                </div>
+                <h2 className="font-medium text-gray-800">{p.title}</h2>
+                <p className="text-sm text-gray-500">{p.city}</p>
+                <p className="text-indigo-600 font-semibold">₹{p.price.toLocaleString()}</p>
+              </div>
             </Link>
           ))}
         </div>
