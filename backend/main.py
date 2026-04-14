@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base, SessionLocal
@@ -18,6 +19,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:3000",
+        os.getenv("FRONTEND_URL", ""),  # have to set this in azure app settings
     ],
     allow_credentials=True,
     allow_methods=["*"],
