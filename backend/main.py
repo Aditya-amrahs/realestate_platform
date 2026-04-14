@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine, Base
+from database import engine, Base, SessionLocal
 import models
-from routers import auth, properties, bookings, favorites, analytics
+from routers import auth, properties, bookings, favorites, analytics, recommendations
+
+# vector store
+from vector_store import build_index
+from sqlalchemy.orm import Session
 
 Base.metadata.create_all(bind=engine)
 
@@ -25,8 +29,21 @@ app.include_router(properties.router)
 app.include_router(bookings.router)
 app.include_router(favorites.router)
 app.include_router(analytics.router)
+app.include_router(recommendations.router)
 
 
 @app.get("/")
 def root():
     return {"message": "Real Estate API is running"}
+
+
+# for FAISS index, we build it on startup and whenever a new property is added.
+@app.on_event("startup")
+def startup_event():
+    db: Session = Session(bind=engine)
+    try:
+        properties = db.query(models.Property).all()
+        build_index(properties)
+        print(f"Built FAISS index for {len(properties)} properties")
+    finally:
+        db.close()

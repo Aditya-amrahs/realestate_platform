@@ -1,3 +1,5 @@
+from email.mime import image
+
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import date, time
@@ -37,6 +39,7 @@ class PropertyCreate(BaseModel):
     price: float
     type: str
     size: int
+    image_url: Optional[str] = None
 
 
 class PropertyUpdate(BaseModel):
@@ -45,6 +48,7 @@ class PropertyUpdate(BaseModel):
     price: Optional[float] = None
     type: Optional[str] = None
     size: Optional[int] = None
+    image_url: Optional[str] = None
 
 
 class PropertyOut(BaseModel):
@@ -55,6 +59,7 @@ class PropertyOut(BaseModel):
     type: str
     size: int
     agent_id: int
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True

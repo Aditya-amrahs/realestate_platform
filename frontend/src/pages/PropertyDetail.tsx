@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
 interface Property {
   id: number; title: string; city: string;
-  price: number; type: string; size: number; agent_id: number;
+  price: number; type: string; size: number; agent_id: number; image_url: string | null;
 }
+
+interface SimilarProperty {
+  id: number; title: string; city: string; price: number; type: string; size: number;
+}
+//state declarations
+const [similar, setSimilar] = useState<SimilarProperty[]>([]);
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -18,6 +24,10 @@ export default function PropertyDetail() {
 
   useEffect(() => {
     api.get(`/properties/${id}`).then(r => setProperty(r.data));
+
+    api.get(`/properties/${id}/similar`) //fetch similar properties for recommendations
+  .then(r => setSimilar(r.data))
+  .catch(() => {});   // fail silently if index not ready
   }, [id]);
 
   async function handleBook(e: React.FormEvent) {
@@ -46,10 +56,16 @@ export default function PropertyDetail() {
 
   if (!property) return <div className="p-8 text-gray-500">Loading...</div>;
 
-  return (
+    return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <button onClick={() => navigate(-1)} className="text-sm text-indigo-600 mb-4 hover:underline">← Back</button>
+      
       <div className="bg-white rounded-xl shadow p-6 space-y-4">
+        {property.image_url && (
+          <div className="h-64 rounded-lg overflow-hidden -mx-6 -mt-6 mb-2">
+            <img src={property.image_url} alt={property.title} className="w-full h-full object-cover" />
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">{property.type}</span>
           <span className="text-xs text-gray-400">{property.size} sqft</span>
@@ -81,6 +97,27 @@ export default function PropertyDetail() {
                 Confirm Booking
               </button>
             </form>
+          </div>
+        )}
+
+        {/* Similar Properties Section */}
+        {similar.length > 0 && (
+          <div className="mt-8 pt-6 border-t">
+            <h2 className="text-lg font-semibold text-gray-700 mb-3">Similar properties</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {similar.map(s => (
+                <Link to={`/properties/${s.id}`} key={s.id}
+                  className="bg-gray-50 border rounded-xl p-4 hover:shadow transition space-y-1 block">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">{s.type}</span>
+                    <span className="text-xs text-gray-400">{s.size} sqft</span>
+                  </div>
+                  <p className="text-sm font-medium text-gray-800 truncate">{s.title}</p>
+                  <p className="text-xs text-gray-500">{s.city}</p>
+                  <p className="text-sm font-semibold text-indigo-600">₹{s.price.toLocaleString()}</p>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>
