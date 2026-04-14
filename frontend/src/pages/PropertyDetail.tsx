@@ -5,14 +5,13 @@ import { useAuth } from "../context/AuthContext";
 
 interface Property {
   id: number; title: string; city: string;
-  price: number; type: string; size: number; agent_id: number; image_url: string | null;
+  price: number; type: string; size: number; agent_id: number; image_url?: string | null;
 }
 
 interface SimilarProperty {
   id: number; title: string; city: string; price: number; type: string; size: number;
 }
-//state declarations
-const [similar, setSimilar] = useState<SimilarProperty[]>([]);
+
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -22,12 +21,16 @@ export default function PropertyDetail() {
   const [booking, setBooking] = useState({ visit_date: "", visit_time: "" });
   const [msg, setMsg] = useState("");
 
+  //state declarations
+  const [similar, setSimilar] = useState<SimilarProperty[]>([]);
+  
   useEffect(() => {
-    api.get(`/properties/${id}`).then(r => setProperty(r.data));
+    api.get(`/properties/${id}`)
+      .then(r => setProperty(r.data));
 
-    api.get(`/properties/${id}/similar`) //fetch similar properties for recommendations
-  .then(r => setSimilar(r.data))
-  .catch(() => {});   // fail silently if index not ready
+    api.get(`/properties/${id}/similar`)
+      .then(r => setSimilar(r.data))
+      .catch(() => {});   // this line must be present
   }, [id]);
 
   async function handleBook(e: React.FormEvent) {

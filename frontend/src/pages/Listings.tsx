@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 interface Property {
   id: number; title: string; city: string;
-  price: number; type: string; size: number; image_url: string | null;
+  price: number; type: string; size: number; image_url?: string | null;
 }
 
 
