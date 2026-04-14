@@ -1,11 +1,21 @@
+import re
+
 import numpy as np
 from sentence_transformers import SentenceTransformer
 import faiss
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = None
 
 index = None
 property_ids = []
+
+try:
+    from sentence_transformers import SentenceTransformer
+
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+except Exception as e:
+    print(f"Warning: sentence-transformers failed to load: {e}")
+    print("Recommendations will be unavailable.")
 
 
 def build_index(properties: list):
@@ -14,6 +24,11 @@ def build_index(properties: list):
     properties: list of ORM Property objects
     """
     global index, property_ids
+
+    if (
+        model is None or not properties
+    ):  # guard against uninitialized model or empty properties
+        return
 
     if not properties:
         return
@@ -33,7 +48,11 @@ def build_index(properties: list):
 
 def get_similar(property_id: int, top_k: int = 5) -> list[int]:
     """Returns list of similar property IDs (excluding itself)."""
+
     global index, property_ids
+
+    if model is None or index is None:  # guard against uninitialized model/index
+        return []
 
     if index is None or property_id not in property_ids:
         return []
